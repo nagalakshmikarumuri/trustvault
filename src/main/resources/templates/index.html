@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${appName} + ' - Home'">TrustVault - Home</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-box">
+                <span class="logo-icon">&#128274;</span>
+                <h1 th:text="${appName}">TrustVault</h1>
+            </div>
+            <p class="tagline" th:text="${tagline}">Secure Document-Sharing Application</p>
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span th:text="'System Status: ' + ${status} + ' (' + ${phase} + ')'">System Status: ONLINE</span>
+            </div>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>Application Health Check</h2>
+                <p>Verify the REST API health endpoint to confirm server responsiveness and JSON serialization:</p>
+                <div class="action-box">
+                    <a th:href="@{/api/health}" target="_blank" class="btn">Test Health Endpoint (/api/health)</a>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Project Architectural Structure</h2>
+                <p>TrustVault is structured in clean layers designed for maintainability and scalability:</p>
+                <div class="grid">
+                    <div class="grid-item">
+                        <strong>config</strong>
+                        <span>Spring beans &amp; web/security configuration</span>
+                    </div>
+                    <div class="grid-item">
+                        <strong>controller</strong>
+                        <span>HTTP REST APIs &amp; Thymeleaf web endpoints</span>
+                    </div>
+                    <div class="grid-item">
+                        <strong>service</strong>
+                        <span>Business logic &amp; transaction management</span>
+                    </div>
+                    <div class="grid-item">
+                        <strong>repository</strong>
+                        <span>Spring Data JPA database interfaces</span>
+                    </div>
+                    <div class="grid-item">
+                        <strong>entity</strong>
+                        <span>Database models (Users, Documents, Permissions, Audit)</span>
+                    </div>
+                    <div class="grid-item">
+                        <strong>security</strong>
+                        <span>Authentication &amp; RBAC (ADMIN, OWNER, VIEWER)</span>
+                    </div>
+                    <div class="grid-item">
+                        <strong>dto</strong>
+                        <span>Data Transfer Objects for request and response payloads</span>
+                    </div>
+                    <div class="grid-item">
+                        <strong>exception</strong>
+                        <span>Custom exceptions &amp; global error handling</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Upcoming Modules (Roadmap)</h2>
+                <ul class="roadmap-list">
+                    <li><span class="step-num">Step 2:</span> Database configuration (MySQL) &amp; JPA Entity models</li>
+                    <li><span class="step-num">Step 3:</span> Spring Security authentication &amp; RBAC roles (ADMIN, OWNER, VIEWER)</li>
+                    <li><span class="step-num">Step 4:</span> Document upload, validation, metadata storage, and categories</li>
+                    <li><span class="step-num">Step 5:</span> Granular document permissions (READ, EDIT) with owner grant/revoke</li>
+                    <li><span class="step-num">Step 6:</span> Comprehensive Audit Logging for tracking access &amp; unauthorized attempts</li>
+                    <li><span class="step-num">Step 7:</span> Search capabilities (name, owner, category, date) &amp; Admin views</li>
+                </ul>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2026 TrustVault &bull; Snovasys Fresher Hiring Challenge</p>
+        </footer>
+    </div>
+</body>
+</html>
