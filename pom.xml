@@ -54,10 +54,11 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!--
-            Upcoming Dependencies (To be added in subsequent phases):
-            1. spring-boot-starter-security (For Authentication & RBAC Authorization)
-        -->
+        <!-- Spring Boot Starter Security: Authentication and access control -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
