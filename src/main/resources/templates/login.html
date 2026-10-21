@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustVault - Sign In</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .login-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border-top: 4px solid #3182ce;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            font-size: 1.8rem;
+            color: #1a202c;
+            margin-top: 0.5rem;
+            font-weight: 700;
+        }
+
+        .login-header .tagline {
+            font-size: 0.95rem;
+            color: #718096;
+            margin-top: 0.25rem;
+            margin-bottom: 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            color: #2d3748;
+            background-color: #ffffff;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+        }
+
+        .btn-submit {
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: center;
+            margin-top: 0.5rem;
+            padding: 0.85rem 1.5rem;
+        }
+
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-error {
+            background-color: #fff5f5;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+
+        .alert-info {
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            border: 1px solid #bee3f8;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .login-footer a {
+            color: #3182ce;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-wrapper">
+            <div class="login-card">
+                <div class="login-header">
+                    <div class="logo-box">
+                        <span class="logo-icon">&#128274;</span>
+                        <span style="font-size: 1.5rem; font-weight: 700; color: #1a202c;">TrustVault</span>
+                    </div>
+                    <h1>Sign In</h1>
+                    <p class="tagline">Enter your credentials to access your account</p>
+                </div>
+
+                <!-- Error Notification -->
+                <div th:if="${param.error}" class="alert alert-error" role="alert" id="login-error-alert">
+                    <span>&#9888;</span>
+                    <span>Invalid username or password. Please try again.</span>
+                </div>
+
+                <!-- Logout Notification -->
+                <div th:if="${param.logout}" class="alert alert-info" role="status" id="login-logout-alert">
+                    <span>&#10003;</span>
+                    <span>You have been logged out successfully.</span>
+                </div>
+
+                <!-- Form Login -->
+                <form th:action="@{/login}" method="post">
+                    <div class="form-group">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" id="username" name="username" class="form-input"
+                               placeholder="Enter your username" required autofocus autocomplete="username" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="password" name="password" class="form-input"
+                               placeholder="Enter your password" required autocomplete="current-password" />
+                    </div>
+
+                    <button type="submit" class="btn btn-submit" id="login-submit-btn">Sign In</button>
+                </form>
+
+                <div class="login-footer">
+                    <a th:href="@{/}">&larr; Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

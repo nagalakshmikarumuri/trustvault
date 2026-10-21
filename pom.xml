@@ -41,6 +41,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Spring Security Test: MockMvc support and security test utilities -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Spring Data JPA: Relational data persistence and Hibernate ORM -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
