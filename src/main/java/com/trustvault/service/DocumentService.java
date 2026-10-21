@@ -58,4 +58,19 @@ public class DocumentService {
         return documentRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new NoSuchElementException("Active document not found with ID: " + id));
     }
+
+    /**
+     * Persists a new Document record.
+     *
+     * <p>This method runs in a write transaction. The caller is responsible for
+     * populating all required fields on the entity (name, storedFilename, owner,
+     * contentType, fileSize) before invoking this method.
+     *
+     * @param document the fully-populated Document entity to save
+     * @return the saved Document with its generated ID populated
+     */
+    @Transactional
+    public Document saveDocument(Document document) {
+        return documentRepository.save(document);
+    }
 }
