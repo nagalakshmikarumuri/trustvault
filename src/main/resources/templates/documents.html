@@ -5,306 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrustVault - My Documents</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>
-        /* ── Upload form ──────────────────────────────────────────── */
-        .upload-section {
-            margin-bottom: 1.5rem;
-        }
-
-        .upload-form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: flex-end;
-            margin-top: 1rem;
-        }
-
-        .upload-form .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-        }
-
-        .upload-form label {
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #4a5568;
-        }
-
-        .upload-form input[type="file"],
-        .upload-form input[type="text"] {
-            padding: 0.55rem 0.75rem;
-            border: 1px solid #cbd5e0;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            color: #2d3748;
-            background: #fff;
-        }
-
-        .upload-form input[type="file"]:focus,
-        .upload-form input[type="text"]:focus {
-            outline: none;
-            border-color: #3182ce;
-            box-shadow: 0 0 0 3px rgba(49,130,206,0.2);
-        }
-
-        .btn-upload {
-            background-color: #38a169;
-            color: #fff;
-            border: none;
-            padding: 0.65rem 1.4rem;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            align-self: flex-end;
-        }
-
-        .btn-upload:hover {
-            background-color: #2f855a;
-        }
-
-        /* ── Flash messages ───────────────────────────────────────── */
-        .alert {
-            padding: 0.75rem 1rem;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            margin-bottom: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .alert-success {
-            background-color: #f0fff4;
-            color: #276749;
-            border: 1px solid #9ae6b4;
-        }
-
-        .alert-error {
-            background-color: #fff5f5;
-            color: #c53030;
-            border: 1px solid #feb2b2;
-        }
-
-        /* ── Document table ───────────────────────────────────────── */
-        .doc-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .doc-table th {
-            background: #edf2f7;
-            color: #4a5568;
-            font-weight: 600;
-            padding: 0.6rem 0.9rem;
-            text-align: left;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .doc-table td {
-            padding: 0.6rem 0.9rem;
-            border-bottom: 1px solid #e2e8f0;
-            color: #2d3748;
-            word-break: break-word;
-        }
-
-        .doc-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .doc-table tr:hover td {
-            background-color: #f7fafc;
-        }
-
-        .doc-table .file-size {
-            white-space: nowrap;
-            text-align: right;
-        }
-
-        .doc-table .date-cell {
-            white-space: nowrap;
-            font-size: 0.85rem;
-            color: #718096;
-        }
-
-        .badge {
-            display: inline-block;
-            background-color: #ebf8ff;
-            color: #2b6cb0;
-            border-radius: 9999px;
-            padding: 0.15rem 0.55rem;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 2.5rem 1rem;
-            color: #a0aec0;
-        }
-
-        .empty-state .empty-icon {
-            font-size: 2.5rem;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        /* ── Nav bar ──────────────────────────────────────────────── */
-        .nav-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-top: 4px solid #3182ce;
-        }
-
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #1a202c;
-            text-decoration: none;
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .nav-actions span {
-            color: #4a5568;
-        }
-
-        .btn-logout {
-            background: none;
-            border: 1px solid #cbd5e0;
-            border-radius: 6px;
-            padding: 0.4rem 0.9rem;
-            cursor: pointer;
-            font-size: 0.9rem;
-            color: #4a5568;
-            transition: background-color 0.2s;
-        }
-
-        .btn-logout:hover {
-            background-color: #edf2f7;
-        }
-    </style>
 </head>
 <body>
 <div class="container">
+    <div th:replace="~{fragments/nav :: main(${username}, ${isAdmin})}"></div>
 
-    <!-- Navigation Bar -->
-    <nav class="nav-bar">
-        <a th:href="@{/}" class="nav-brand">
-            <span>&#128274;</span> TrustVault
-        </a>
-        <div class="nav-actions">
-            <span>Signed in as <strong th:text="${username}">user</strong></span>
-            <form th:action="@{/logout}" method="post" style="margin:0;">
-                <button type="submit" class="btn-logout">Sign Out</button>
-            </form>
-        </div>
-    </nav>
+    <div th:if="${successMessage}" class="alert alert-success" role="status" th:text="${successMessage}">Success.</div>
+    <div th:if="${errorMessage}" class="alert alert-error" role="alert" th:text="${errorMessage}">Error.</div>
 
-    <!-- Flash Messages -->
-    <div th:if="${successMessage}" class="alert alert-success" role="status">
-        <span>&#10003;</span>
-        <span th:text="${successMessage}">Success.</span>
-    </div>
-
-    <div th:if="${errorMessage}" class="alert alert-error" role="alert">
-        <span>&#9888;</span>
-        <span th:text="${errorMessage}">An error occurred.</span>
-    </div>
-
-    <!-- Upload Section -->
     <section class="card upload-section">
-        <h2>&#128229; Upload Document</h2>
+        <h2>Upload Document</h2>
         <p>Select a file (max 10&nbsp;MB). Only letters, digits, hyphens, underscores, dots, and spaces are allowed in the filename.</p>
 
         <form class="upload-form"
               th:action="@{/documents/upload}"
               method="post"
               enctype="multipart/form-data">
-
-            <!-- CSRF token is injected automatically by Thymeleaf + Spring Security -->
-
             <div class="form-group">
                 <label for="file">File *</label>
                 <input type="file" id="file" name="file" required>
             </div>
-
             <div class="form-group">
                 <label for="category">Category (optional)</label>
-                <input type="text" id="category" name="category"
-                       placeholder="e.g. Finance, Legal, Personal"
-                       maxlength="100">
+                <input type="text" id="category" name="category" maxlength="100">
             </div>
-
-            <button type="submit" class="btn-upload">&#8679; Upload</button>
+            <button type="submit" class="btn">Upload</button>
         </form>
     </section>
 
-    <!-- Document List Section -->
     <section class="card">
-        <h2>&#128196; My Documents
-            <span class="badge" th:text="${documents.size()} + ' file(s)'" style="font-size:0.75rem; margin-left:0.5rem;">0 file(s)</span>
+        <h2>My Documents
+            <span class="badge" th:text="${documents.size()} + ' file(s)'">0 file(s)</span>
         </h2>
-
-        <!-- Empty state -->
-        <div th:if="${documents.isEmpty()}" class="empty-state">
-            <span class="empty-icon">&#128230;</span>
-            <p>You have not uploaded any documents yet. Use the form above to get started.</p>
+        <div th:if="${documents.isEmpty()}">
+            <p>You have not uploaded any documents yet.</p>
         </div>
-
-        <!-- Document table -->
         <table th:unless="${documents.isEmpty()}" class="doc-table" aria-label="Your documents">
             <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Filename</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">Type</th>
-                    <th scope="col" class="file-size">Size</th>
-                    <th scope="col" class="date-cell">Uploaded</th>
-                </tr>
+            <tr>
+                <th>#</th>
+                <th>Filename</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th>Size</th>
+                <th>Uploaded</th>
+                <th>Actions</th>
+            </tr>
             </thead>
             <tbody>
-                <tr th:each="doc, stat : ${documents}">
-                    <td th:text="${stat.count}">1</td>
-                    <td th:text="${doc.name}">filename.pdf</td>
-                    <td>
-                        <span th:if="${doc.category != null and !doc.category.isBlank()}"
-                              class="badge" th:text="${doc.category}">Category</span>
-                        <span th:unless="${doc.category != null and !doc.category.isBlank()}"
-                              style="color:#a0aec0;">—</span>
-                    </td>
-                    <td th:text="${doc.contentType != null ? doc.contentType : '—'}">application/pdf</td>
-                    <td class="file-size" th:text="${#numbers.formatDecimal(doc.fileSize / 1024.0, 1, 'COMMA', 1, 'POINT')} + ' KB'">0 KB</td>
-                    <td class="date-cell"
-                        th:text="${#temporals.format(doc.createdAt, 'dd MMM yyyy, HH:mm')}">01 Jan 2026, 00:00</td>
-                </tr>
+            <tr th:each="item, stat : ${ownedItems}">
+                <td th:text="${stat.count}">1</td>
+                <td th:text="${item.document.name}">filename.pdf</td>
+                <td th:text="${item.document.category != null ? item.document.category : '—'}">Category</td>
+                <td th:text="${item.document.contentType != null ? item.document.contentType : '—'}">application/pdf</td>
+                <td th:text="${item.document.fileSize}">0</td>
+                <td th:text="${#temporals.format(item.document.createdAt, 'dd MMM yyyy, HH:mm')}">01 Jan 2026, 00:00</td>
+                <td>
+                    <a th:href="@{/documents/{id}/download(id=${item.document.id})}">Download</a>
+                    <a th:href="@{/documents/{id}/edit(id=${item.document.id})}">Edit</a>
+                    <a th:href="@{/documents/{id}/permissions(id=${item.document.id})}">Permissions</a>
+                    <form th:action="@{/documents/{id}/delete(id=${item.document.id})}" method="post" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="card">
+        <h2>Shared with me</h2>
+        <div th:if="${sharedItems == null or sharedItems.isEmpty()}">
+            <p>No documents have been shared with you.</p>
+        </div>
+        <table th:unless="${sharedItems == null or sharedItems.isEmpty()}" class="doc-table">
+            <thead>
+            <tr>
+                <th>Filename</th>
+                <th>Owner</th>
+                <th>Access</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${sharedItems}">
+                <td th:text="${item.document.name}">file</td>
+                <td th:text="${item.document.owner.username}">owner</td>
+                <td th:text="${item.permissionLabel}">READ</td>
+                <td>
+                    <a th:if="${item.canDownload}" th:href="@{/documents/{id}/download(id=${item.document.id})}">Download</a>
+                    <a th:if="${item.canEdit}" th:href="@{/documents/{id}/edit(id=${item.document.id})}">Edit</a>
+                </td>
+            </tr>
             </tbody>
         </table>
     </section>
 
     <footer class="footer">
-        <p>&copy; 2026 TrustVault &bull; Snovasys Fresher Hiring Challenge</p>
+        <p>&copy; 2026 TrustVault</p>
     </footer>
-
 </div>
 </body>
 </html>

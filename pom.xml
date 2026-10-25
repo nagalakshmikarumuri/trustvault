@@ -67,6 +67,12 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- Thymeleaf Spring Security extras for role-based view fragments -->
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+        </dependency>
+
         <!-- Flyway Core: Database migration framework -->
         <dependency>
             <groupId>org.flywaydb</groupId>

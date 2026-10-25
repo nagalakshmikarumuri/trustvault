@@ -19,6 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
  * - Form login: custom login page at "/login", redirecting to "/" on success, "/login?error" on failure.
  * - Logout: POST "/logout", redirecting to "/login?logout".
  * - DaoAuthenticationProvider explicitly binds CustomUserDetailsService and PasswordEncoder.
+ * - "/admin/**" requires ROLE_ADMIN.
  * - All other routes are protected by default.
  * - CSRF defense remains enabled.
  */
@@ -32,6 +33,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/api/health", "/login", "/css/**").permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Search documents</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <div th:replace="~{fragments/nav :: main(${username}, ${isAdmin})}"></div>
+    <section class="card">
+        <h2>Search</h2>
+        <p>Results include only documents you own or that were shared with you.</p>
+        <form th:action="@{/documents/search}" method="get">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" th:value="${name}">
+            </div>
+            <div class="form-group">
+                <label for="owner">Owner username</label>
+                <input id="owner" name="owner" type="text" th:value="${owner}">
+            </div>
+            <div class="form-group">
+                <label for="category">Category</label>
+                <input id="category" name="category" type="text" th:value="${category}">
+            </div>
+            <div class="form-group">
+                <label for="from">From date</label>
+                <input id="from" name="from" type="date" th:value="${from}">
+            </div>
+            <div class="form-group">
+                <label for="to">To date</label>
+                <input id="to" name="to" type="date" th:value="${to}">
+            </div>
+            <button type="submit" class="btn">Search</button>
+        </form>
+    </section>
+    <section class="card">
+        <h2>Results</h2>
+        <div th:if="${results == null or results.isEmpty()}">
+            <p>No matching documents.</p>
+        </div>
+        <table th:unless="${results == null or results.isEmpty()}" class="doc-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Owner</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Access</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${results}">
+                <td th:text="${item.document.name}">name</td>
+                <td th:text="${item.document.owner.username}">owner</td>
+                <td th:text="${item.document.category}">cat</td>
+                <td th:text="${#temporals.format(item.document.createdAt, 'dd MMM yyyy')}">date</td>
+                <td th:text="${item.permissionLabel}">OWNER</td>
+                <td>
+                    <a th:if="${item.canDownload}" th:href="@{/documents/{id}/download(id=${item.document.id})}">Download</a>
+                    <a th:if="${item.canEdit}" th:href="@{/documents/{id}/edit(id=${item.document.id})}">Edit</a>
+                    <a th:if="${item.canManagePermissions}" th:href="@{/documents/{id}/permissions(id=${item.document.id})}">Permissions</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+</body>
+</html>

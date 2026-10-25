@@ -18,6 +18,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -123,5 +125,41 @@ class DocumentServiceTest {
                 .hasMessageContaining("Active document not found with ID: 999");
 
         verify(documentRepository).findByIdAndDeletedFalse(999L);
+    }
+
+    @Test
+    @DisplayName("updateMetadata changes name and category but not owner")
+    void updateMetadataDoesNotChangeOwner() {
+        when(documentRepository.save(sampleDoc1)).thenReturn(sampleDoc1);
+
+        Document updated = documentService.updateMetadata(sampleDoc1, "New.pdf", "Tax");
+
+        assertThat(updated.getName()).isEqualTo("New.pdf");
+        assertThat(updated.getCategory()).isEqualTo("Tax");
+        assertThat(updated.getOwner().getId()).isEqualTo(101L);
+        verify(documentRepository).save(sampleDoc1);
+    }
+
+    @Test
+    @DisplayName("softDelete marks the document deleted")
+    void softDeleteSetsFlag() {
+        when(documentRepository.save(sampleDoc1)).thenReturn(sampleDoc1);
+
+        Document deleted = documentService.softDelete(sampleDoc1);
+
+        assertThat(deleted.isDeleted()).isTrue();
+        verify(documentRepository).save(sampleDoc1);
+    }
+
+    @Test
+    @DisplayName("searchAuthorized delegates to repository with the current user id")
+    void searchAuthorizedUsesCurrentUser() {
+        when(documentRepository.searchAuthorized(eq(101L), eq("Resume"), isNull(), isNull(), isNull(), isNull()))
+                .thenReturn(List.of(sampleDoc1));
+
+        List<Document> results = documentService.searchAuthorized(101L, "Resume", null, null, null, null);
+
+        assertThat(results).containsExactly(sampleDoc1);
+        verify(documentRepository).searchAuthorized(eq(101L), eq("Resume"), isNull(), isNull(), isNull(), isNull());
     }
 }

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav class="nav-bar" th:fragment="main(username, isAdmin)">
+    <a th:href="@{/}" class="nav-brand">TrustVault</a>
+    <div class="nav-actions">
+        <a th:href="@{/documents}">Documents</a>
+        <a th:href="@{/documents/search}">Search</a>
+        <a th:if="${isAdmin}" th:href="@{/admin/audit}">Audit</a>
+        <span>Signed in as <strong th:text="${username}">user</strong></span>
+        <form th:action="@{/logout}" method="post" style="margin:0;">
+            <button type="submit" class="btn-logout">Sign Out</button>
+        </form>
+    </div>
+</nav>
+</body>
+</html>

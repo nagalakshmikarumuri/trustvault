@@ -169,4 +169,18 @@ class DocumentStorageServiceTest {
         String storedFilename = storageService.store(file);
         assertThat(storedFilename).isNotBlank();
     }
+
+    @Test
+    @DisplayName("loadAsResource returns the stored bytes and rejects path traversal keys")
+    void loadAsResourceAndRejectTraversal() throws IOException {
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "report.pdf", "application/pdf", "PDF content".getBytes());
+        String storedFilename = storageService.store(file);
+
+        assertThat(storageService.loadAsResource(storedFilename).getInputStream().readAllBytes())
+                .isEqualTo("PDF content".getBytes());
+
+        assertThatThrownBy(() -> storageService.loadAsResource("../secret.txt"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

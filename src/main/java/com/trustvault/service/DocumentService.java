@@ -5,6 +5,8 @@ import com.trustvault.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -72,5 +74,62 @@ public class DocumentService {
     @Transactional
     public Document saveDocument(Document document) {
         return documentRepository.save(document);
+    }
+
+    /**
+     * Soft-deletes a document. Caller must have already authorized ownership.
+     */
+    @Transactional
+    public Document softDelete(Document document) {
+        document.setDeleted(true);
+        return documentRepository.save(document);
+    }
+
+    /**
+     * Updates allowed metadata only. Owner identity cannot be changed here.
+     */
+    @Transactional
+    public Document updateMetadata(Document document, String name, String category) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Document name is required.");
+        }
+        String trimmedName = name.trim();
+        if (trimmedName.length() > 255) {
+            throw new IllegalArgumentException("Document name is too long.");
+        }
+        document.setName(trimmedName);
+        if (category == null || category.isBlank()) {
+            document.setCategory(null);
+        } else {
+            String trimmedCategory = category.trim();
+            if (trimmedCategory.length() > 100) {
+                throw new IllegalArgumentException("Category is too long.");
+            }
+            document.setCategory(trimmedCategory);
+        }
+        return documentRepository.save(document);
+    }
+
+    public List<Document> searchAuthorized(Long userId,
+                                           String name,
+                                           String ownerUsername,
+                                           String category,
+                                           LocalDate from,
+                                           LocalDate to) {
+        return documentRepository.searchAuthorized(
+                userId,
+                blankToNull(name),
+                blankToNull(ownerUsername),
+                blankToNull(category),
+                from == null ? null : from.atStartOfDay(),
+                to == null ? null : to.plusDays(1).atStartOfDay()
+        );
+    }
+
+    private static String blankToNull(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value.trim();
     }
 }

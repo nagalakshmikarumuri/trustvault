@@ -1,12 +1,15 @@
 package com.trustvault.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -113,6 +116,38 @@ public class DocumentStorageService {
      */
     public Path getStorageRoot() {
         return storageRoot;
+    }
+
+    /**
+     * Loads a stored file after authorization. {@code storedFilename} must come from
+     * persistence, never from the client.
+     */
+    public Resource loadAsResource(String storedFilename) throws IOException {
+        Path targetPath = resolveStoredPath(storedFilename);
+        if (!Files.isRegularFile(targetPath)) {
+            throw new IllegalArgumentException("Stored file is not available.");
+        }
+        try {
+            // Load file bytes into memory to avoid holding an OS file lock after the stream is read.
+            byte[] data = Files.readAllBytes(targetPath);
+            return new org.springframework.core.io.ByteArrayResource(data);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Stored file is not available.", e);
+        }
+    }
+
+    Path resolveStoredPath(String storedFilename) {
+        if (!StringUtils.hasText(storedFilename)
+                || storedFilename.contains("..")
+                || storedFilename.contains("/")
+                || storedFilename.contains("\\")) {
+            throw new IllegalArgumentException("Invalid storage key.");
+        }
+        Path targetPath = this.storageRoot.resolve(storedFilename).normalize();
+        if (!targetPath.startsWith(this.storageRoot)) {
+            throw new IllegalArgumentException("Invalid storage key.");
+        }
+        return targetPath;
     }
 
     // -------------------------------------------------------------------------

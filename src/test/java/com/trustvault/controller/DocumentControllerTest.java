@@ -4,6 +4,9 @@ import com.trustvault.entity.Document;
 import com.trustvault.entity.Role;
 import com.trustvault.entity.User;
 import com.trustvault.repository.UserRepository;
+import com.trustvault.service.AuditService;
+import com.trustvault.service.DocumentAccessService;
+import com.trustvault.service.DocumentPermissionService;
 import com.trustvault.service.DocumentService;
 import com.trustvault.service.DocumentStorageService;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +24,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -55,6 +60,15 @@ class DocumentControllerTest {
     @MockBean
     private DocumentStorageService documentStorageService;
 
+    @MockBean
+    private DocumentAccessService documentAccessService;
+
+    @MockBean
+    private DocumentPermissionService documentPermissionService;
+
+    @MockBean
+    private AuditService auditService;
+
     private User testUser;
     private Document doc1;
     private Document doc2;
@@ -68,6 +82,13 @@ class DocumentControllerTest {
         doc1.setId(10L);
         doc2 = new Document("Contract.docx", "uuid-contract.docx", testUser, "Legal", "application/msword", 4096L);
         doc2.setId(11L);
+
+        when(documentPermissionService.listSharedWith(any())).thenReturn(List.of());
+        when(documentAccessService.isOwner(any(), any())).thenReturn(true);
+        when(documentAccessService.canDownload(any(), any())).thenReturn(true);
+        when(documentAccessService.canEdit(any(), any())).thenReturn(true);
+        when(documentAccessService.canDelete(any(), any())).thenReturn(true);
+        when(documentAccessService.canManagePermissions(any(), any())).thenReturn(true);
     }
 
     // ─── Access control ─────────────────────────────────────────────────────

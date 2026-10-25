@@ -30,6 +30,9 @@ class DocumentRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private DocumentPermissionRepository documentPermissionRepository;
+
     @Test
     @DisplayName("findByOwnerIdAndDeletedFalse should return only active documents for the specified owner")
     void shouldFindActiveDocumentsByOwnerId() {
@@ -70,5 +73,33 @@ class DocumentRepositoryTest {
         assertThat(foundActive).isPresent();
         assertThat(foundActive.get().getName()).isEqualTo("Invoice.pdf");
         assertThat(foundDeleted).isEmpty();
+    }
+
+    @Test
+    @DisplayName("searchAuthorized returns only owned or shared documents")
+    void searchAuthorizedDoesNotLeakOtherUsersDocuments() {
+        User owner1 = userRepository.save(new User("search_owner", "$2a$10$hashSample4", Role.OWNER, true));
+        User other = userRepository.save(new User("search_other", "$2a$10$hashSample5", Role.OWNER, true));
+        User reader = userRepository.save(new User("search_reader", "$2a$10$hashSample6", Role.VIEWER, true));
+
+        Document owned = documentRepository.save(
+                new Document("OwnedSearch.pdf", "uuid_owned_search.pdf", owner1, "Legal", "application/pdf", 100L));
+        documentRepository.save(
+                new Document("SecretSearch.pdf", "uuid_secret_search.pdf", other, "Legal", "application/pdf", 100L));
+        Document shared = documentRepository.save(
+                new Document("SharedSearch.pdf", "uuid_shared_search.pdf", other, "Finance", "application/pdf", 100L));
+
+        documentPermissionRepository.save(
+                new com.trustvault.entity.DocumentPermission(shared, reader, com.trustvault.entity.PermissionType.READ, other));
+
+        List<Document> ownerResults = documentRepository.searchAuthorized(owner1.getId(), null, null, null, null, null);
+        List<Document> readerResults = documentRepository.searchAuthorized(reader.getId(), null, null, null, null, null);
+        List<Document> otherVisibleToOwner = ownerResults.stream()
+                .filter(doc -> doc.getName().equals("SecretSearch.pdf"))
+                .toList();
+
+        assertThat(ownerResults).extracting(Document::getName).contains(owned.getName()).doesNotContain("SecretSearch.pdf");
+        assertThat(otherVisibleToOwner).isEmpty();
+        assertThat(readerResults).extracting(Document::getName).contains("SharedSearch.pdf").doesNotContain("OwnedSearch.pdf", "SecretSearch.pdf");
     }
 }

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Document permissions</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <div th:replace="~{fragments/nav :: main(${username}, ${isAdmin})}"></div>
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}">ok</div>
+    <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}">err</div>
+    <section class="card">
+        <h2>Permissions for <span th:text="${document.name}">file</span></h2>
+        <form th:action="@{/documents/{id}/permissions/grant(id=${document.id})}" method="post">
+            <div class="form-group">
+                <label for="username">Grant to username</label>
+                <input id="username" name="username" type="text" required>
+            </div>
+            <div class="form-group">
+                <label for="permissionType">Permission</label>
+                <select id="permissionType" name="permissionType">
+                    <option value="READ">READ</option>
+                    <option value="EDIT">EDIT</option>
+                </select>
+            </div>
+            <button type="submit" class="btn">Grant</button>
+        </form>
+        <table class="doc-table">
+            <thead>
+            <tr>
+                <th>User</th>
+                <th>Permission</th>
+                <th>Granted by</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="perm : ${permissions}">
+                <td th:text="${perm.user.username}">user</td>
+                <td th:text="${perm.permissionType}">READ</td>
+                <td th:text="${perm.grantedBy.username}">owner</td>
+                <td>
+                    <form th:action="@{/documents/{id}/permissions/{pid}/revoke(id=${document.id}, pid=${perm.id})}" method="post">
+                        <button type="submit">Revoke</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p><a th:href="@{/documents}">Back to documents</a></p>
+    </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Audit log</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <div th:replace="~{fragments/nav :: main(${username}, ${isAdmin})}"></div>
+    <section class="card">
+        <h2>Audit activity</h2>
+        <form th:action="@{/admin/audit}" method="get">
+            <div class="form-group">
+                <label for="action">Action</label>
+                <select id="action" name="action">
+                    <option value="">All</option>
+                    <option th:each="a : ${actions}" th:value="${a}" th:text="${a}" th:selected="${a.name() == action}">UPLOAD</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="actor">Actor username</label>
+                <input id="actor" name="actor" type="text" th:value="${actor}">
+            </div>
+            <div class="form-group">
+                <label for="from">From</label>
+                <input id="from" name="from" type="date" th:value="${from}">
+            </div>
+            <div class="form-group">
+                <label for="to">To</label>
+                <input id="to" name="to" type="date" th:value="${to}">
+            </div>
+            <button type="submit" class="btn">Filter</button>
+        </form>
+        <table class="doc-table">
+            <thead>
+            <tr>
+                <th>Time</th>
+                <th>Actor</th>
+                <th>Action</th>
+                <th>Outcome</th>
+                <th>Document id</th>
+                <th>Target user</th>
+                <th>Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="log : ${logs}">
+                <td th:text="${#temporals.format(log.createdAt, 'dd MMM yyyy HH:mm:ss')}">time</td>
+                <td th:text="${log.actorUsername}">actor</td>
+                <td th:text="${log.action}">UPLOAD</td>
+                <td th:text="${log.outcome}">SUCCESS</td>
+                <td th:text="${log.document != null ? log.document.id : '—'}">1</td>
+                <td th:text="${log.targetUsername != null ? log.targetUsername : '—'}">user</td>
+                <td th:text="${log.details}">details</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+</body>
+</html>
